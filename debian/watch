@@ -1,0 +1,3 @@
+version=3
+
+http://rake.rubyforge.com/frs/?group_id=50 /frs/download.php/\d+/rake-(.+).tgz debian uupdate

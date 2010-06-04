@@ -1,0 +1,37 @@
+#!/usr/bin/make -f
+
+ruby_ver = ee1.8
+
+rake_packages = $(patsubst %,rake-ruby%,$(ruby_ver))
+librake_packages = $(patsubst %,librake-ruby%,$(ruby_ver))
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/ruby-pkg-tools/1/class/ruby-setup-rb.mk
+
+$(patsubst %,install/%,$(rake_packages))::
+	rm -rf $(CURDIR)/debian/$(cdbs_curpkg)/usr/lib
+	mv \
+		$(CURDIR)/debian/$(cdbs_curpkg)/usr/bin/rake \
+		$(CURDIR)/debian/$(cdbs_curpkg)/usr/bin/rake$(cdbs_ruby_ver)
+	gunzip -c \
+		$(CURDIR)/doc/rake.1.gz \
+		> $(CURDIR)/debian/rake$(cdbs_ruby_ver).1
+	sed -i "\
+			s/^\(\.B rake\)$$/\1$(cdbs_ruby_ver)/g; \
+			s/^\(\.IR.\+\)$$/\1-doc/g" \
+		$(CURDIR)/debian/rake$(cdbs_ruby_ver).1
+	$(eval DEB_INSTALL_MANPAGES_$(cdbs_curpkg) += debian/rake$(cdbs_ruby_ver).1)
+
+$(patsubst %,install/%,$(librake_packages))::
+	rm -rf $(CURDIR)/debian/$(cdbs_curpkg)/usr/bin
+
+binary-install/rake-doc::
+	rm -rf $(CURDIR)/debian/$(cdbs_curpkg)/usr/share/doc/$(cdbs_curpkg)/rdoc
+	rdoc --all --inline-source --diagram --fileboxes --line-numbers \
+		--charset=utf-8 --fmt=html \
+		--exclude contrib \
+		--op $(CURDIR)/debian/$(cdbs_curpkg)/usr/share/doc/$(cdbs_curpkg)/rdoc \
+		lib doc/*.rdoc doc/release_notes/*.rdoc
+
+clean::
+	rm -f debian/rake*.1

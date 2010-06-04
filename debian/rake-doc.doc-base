@@ -1,0 +1,9 @@
+Document: rake
+Title: Rake reference
+Author: Jim Weirich
+Abstract: This reference is generated from Rake sources by RDoc
+Section: Help/Books
+
+Format: HTML
+Index: /usr/share/doc/rake-doc/rdoc/index.html
+Files: /usr/share/doc/rake-doc/rdoc/*.html
